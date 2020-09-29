@@ -3,7 +3,6 @@ package random
 import (
 	"bytes"
 	"crypto/rand"
-	"fmt"
 	"io"
 	"math/big"
 	"strconv"
@@ -42,7 +41,6 @@ func Test_Random_NMax_Error_RandFunc(t *testing.T) {
 
 	_, err = r.NMax(n, max)
 	if !IsTimeout(err) {
-		fmt.Printf("%#v\n", err)
 		t.Fatal("expected", timeoutError, "got", nil)
 	}
 }
