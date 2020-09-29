@@ -1,2 +1,3 @@
 # random
-generate pseudo random numbers
+
+Generate pseudo random numbers.
