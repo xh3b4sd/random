@@ -1,7 +1,6 @@
 package random
 
 import (
-	"fmt"
 	"io"
 	"math/big"
 	"strconv"
@@ -13,47 +12,51 @@ import (
 )
 
 type Config struct {
-	// BudgetFunc returns a new error budget implementation that decides when to
-	// retry some failed attempt of executing some operation.
-	BudgetFunc func() budget.Interface
+	// Budget is an error budget implementation that decides when to retry some
+	// failed attempt of executing some operation. The given budget
+	// implementation is guaranteed to be reusable.
+	Budget budget.Interface
 	// RandFunc represents a service returning random values. Here e.g.
 	// crypto/rand.Int can be used.
 	RandFunc func(rand io.Reader, max *big.Int) (n *big.Int, err error)
-
 	// RandReader represents an instance of a cryptographically strong
 	// pseudo-random generator. Here e.g. crypto/rand.Reader can be used.
 	RandReader io.Reader
+
 	// Timeout represents the deadline being waited during random number
 	// creation before returning a timeout error.
 	Timeout time.Duration
 }
 
 type Random struct {
-	budgetFunc func() budget.Interface
+	budget     budget.Interface
 	randFunc   func(rand io.Reader, max *big.Int) (n *big.Int, err error)
-
 	randReader io.Reader
-	timeout    time.Duration
+
+	timeout time.Duration
 }
 
-func New(c Config) (*Random, error) {
-	if c.BudgetFunc == nil {
-		return nil, tracer.Maskf(invalidConfigError, "%T.BudgetFunc must not be empty", c.BudgetFunc)
+func New(config Config) (*Random, error) {
+	if config.Budget == nil {
+		return nil, tracer.Maskf(invalidConfigError, "%T.Budget must not be empty", config.Budget)
 	}
-	if c.RandFunc == nil {
-		return nil, tracer.Maskf(invalidConfigError, "%T.RandFunc must not be empty", c.RandFunc)
+	if config.RandFunc == nil {
+		return nil, tracer.Maskf(invalidConfigError, "%T.RandFunc must not be empty", config.RandFunc)
+	}
+	if config.RandReader == nil {
+		return nil, tracer.Maskf(invalidConfigError, "%T.RandReader must not be empty", config.RandReader)
 	}
 
-	if c.RandReader == nil {
-		return nil, tracer.Maskf(invalidConfigError, "%T.RandReader must not be empty", c.RandReader)
+	if config.Timeout < 0 {
+		return nil, tracer.Maskf(invalidConfigError, "%T.Timeout must not be negative", config.Timeout)
 	}
 
 	r := &Random{
-		budgetFunc: c.BudgetFunc,
-		randFunc:   c.RandFunc,
+		budget:   config.Budget,
+		randFunc: config.RandFunc,
 
-		randReader: c.RandReader,
-		timeout:    c.Timeout,
+		randReader: config.RandReader,
+		timeout:    config.Timeout,
 	}
 
 	return r, nil
@@ -108,18 +111,15 @@ func (r *Random) Max(max int) (int, error) {
 
 		select {
 		case <-time.After(r.timeout):
-			fmt.Printf("1\n")
 			return tracer.Maskf(timeoutError, "after %s", r.timeout)
 		case err := <-fail:
-			fmt.Printf("2\n")
 			return tracer.Mask(err)
 		case <-done:
-			fmt.Printf("3\n")
 			return nil
 		}
 	}
 
-	err := r.budgetFunc().Execute(o)
+	err := r.budget.Execute(o)
 	if err != nil {
 		return 0, tracer.Mask(err)
 	}

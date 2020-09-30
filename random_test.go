@@ -19,15 +19,13 @@ func Test_Random_NMax_Error_RandFunc(t *testing.T) {
 	var r *Random
 	{
 		c := Config{
-			BudgetFunc: func() budget.Interface {
-				return budget.NewSingle()
-			},
+			Budget: budget.NewSingle(),
 			RandFunc: func(randReader io.Reader, max *big.Int) (n *big.Int, err error) {
 				return nil, tracer.Mask(timeoutError)
 			},
-
 			RandReader: &bytes.Buffer{},
-			Timeout:    10 * time.Millisecond,
+
+			Timeout: 10 * time.Millisecond,
 		}
 
 		r, err = New(c)
@@ -51,16 +49,14 @@ func Test_Random_NMax_Error_Timeout(t *testing.T) {
 	var r *Random
 	{
 		c := Config{
-			BudgetFunc: func() budget.Interface {
-				return budget.NewSingle()
-			},
+			Budget: budget.NewSingle(),
 			RandFunc: func(randReader io.Reader, max *big.Int) (n *big.Int, err error) {
 				time.Sleep(200 * time.Millisecond)
 				return rand.Int(randReader, max)
 			},
-
 			RandReader: rand.Reader,
-			Timeout:    20 * time.Millisecond,
+
+			Timeout: 20 * time.Millisecond,
 		}
 
 		r, err = New(c)
@@ -88,13 +84,11 @@ func Test_Random_NMax_Boundaries(t *testing.T) {
 	var r *Random
 	{
 		c := Config{
-			BudgetFunc: func() budget.Interface {
-				return budget.NewSingle()
-			},
-			RandFunc: rand.Int,
-
+			Budget:     budget.NewSingle(),
+			RandFunc:   rand.Int,
 			RandReader: rand.Reader,
-			Timeout:    1 * time.Millisecond,
+
+			Timeout: 1 * time.Millisecond,
 		}
 
 		r, err = New(c)
