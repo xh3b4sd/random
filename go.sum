@@ -1,7 +1,5 @@
 github.com/google/go-cmp v0.5.2 h1:X2ev0eStA3AbceY54o37/0PQ/UWqKEiiO2dKL5OPaFM=
 github.com/google/go-cmp v0.5.2/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
-github.com/xh3b4sd/budget v0.1.0 h1:8LKiw8RMlTHa1fX+ngFl+SHtLcWl9Xo5VnSR8vXqWp0=
-github.com/xh3b4sd/budget v0.1.0/go.mod h1:u4Ci+UNDDCeDNjEOCPYQduvWg+T4G8frIYDxs/YG/ss=
 github.com/xh3b4sd/budget v0.1.1-0.20200930134044-4d6030801ed8 h1:oKoFt50hs96I8km/OCvslctSQUG3O9zvjWN6vjWbFf4=
 github.com/xh3b4sd/budget v0.1.1-0.20200930134044-4d6030801ed8/go.mod h1:u4Ci+UNDDCeDNjEOCPYQduvWg+T4G8frIYDxs/YG/ss=
 github.com/xh3b4sd/tracer v0.3.1 h1:wv4Cy/u/xLXLUJeKQWeiR+aU4mywj2f8PkQVda1EXKQ=
